@@ -1,25 +1,26 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "cppbuild",
-			"label": "C/C++: g++.exe 生成活动文件",
-			"command": "D:\\Code_A\\MinGW\\mingw64\\bin\\g++.exe",
-			"args": [
-				"-fdiagnostics-color=always",
-				"-g",
-				"${file}",
-				"-o",
-				"${fileDirname}\\${fileBasenameNoExtension}.exe"
-			],
-			"options": {
-				"cwd": "${fileDirname}"
-			},
-			"problemMatcher": [
-				"$gcc"
-			],
-			"group": "build",
-			"detail": "编译器: D:\\Code_A\\MinGW\\mingw64\\bin\\g++.exe"
-		}
-	]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "C/C++: g++.exe 生成活动文件",
+            "type": "shell",
+            "command": "D:/Code_A/MinGW/mingw64/bin/g++.exe",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/build/Debug/${fileBasenameNoExtension}.exe",
+                "-std=c++17"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "编译器: D:/Code_A/MinGW/mingw64/bin/g++.exe"
+        }
+    ]
 }
