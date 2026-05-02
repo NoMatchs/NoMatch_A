@@ -1,135 +1,96 @@
-// #include <iostream>
-// #include <string>
-// using namespace std;
-
-// class airCondition
-// {
-// private:
-//     string brand;
-//     string color;
-//     float power;
-//     bool isOn;
-//     int temperature;
-
-// public:
-//     airCondition(string b,string c,float p, int t)
-//     : brand(b), color(c),power(p),temperature(t),isOn(false) {}
-
-//     void toggleSwitch()
-//     {
-//         isOn = !isOn;
-//         if(isOn)
-//         {
-//             cout << "空调已打开"  << endl;
-//         }
-//         else
-//         {
-//             cout << "空调已关闭" << endl;
-//         }
-//     }
-
-//     void warmUp()
-//     {
-//         if(!isOn)
-//         {
-//             cout << "空调未开启，无法升温" << endl;
-//             return;
-//         }
-//         temperature++;
-//         cout << "升温后温度：" << temperature << "C" << endl;
-//     }
-//      void coolUp()
-//     {
-//         if(!isOn)
-//         {
-//             cout << "空调未开启，无法降温" << endl;
-//             return;
-//         }
-//         temperature++;
-//         cout << "降温后温度：" << temperature << "C" << endl;
-//     }
-//     void showStatus() const
-//     {
-//         cout << "\n===== 空调状态 =====" << endl;
-//         cout << "品牌：" << brand << endl;
-//         cout << "颜色：" << color << endl;
-//         cout << "功率：" << power << endl;
-//         cout << "开关状态：" << (isOn ? "开启" : "关闭") << endl;
-//         cout << "当前设定温度：" << temperature << "C" << endl;
-//     }
-// };
-
-// int main() {
-
-//     airCondition myAir("格力","白色",2,25);
-
-//     myAir.toggleSwitch();
-
-//     for(int i = 0;i < 5;i++)
-//     {
-//         myAir.coolUp();
-//     }
-//     myAir.showStatus();
-//     return 0;
-// }
-
 #include <iostream>
-#include <algorithm>
-#include <string>
+#include <cstring>
 using namespace std;
 
-class Student
-{
-private:
-    string id;
-    string name;
-    float score;
-
+class Person {
 public:
-    Student(string i = "", string n = "", float s = 0)
-        : id(i), name(n), score(s) {}
-
-    float getScore() const
-    {
-        return score;
-    }
-
-    void showInfo() const
-    {
-        cout << "学号：" << id << " 姓名：" << name << " 成绩：" << score << endl;
-    }
+    Person(char *Name, int Age);
+    ~Person();
+    // 拷贝构造函数（深拷贝，兼容左值场景）
+    Person(const Person& other);
+    // 移动构造函数（右值引用，转移资源所有权）
+    Person(Person&& other) noexcept;
+    // 拷贝赋值运算符（深拷贝）
+    Person& operator=(const Person& other);
+    // 移动赋值运算符（右值引用，转移资源所有权）
+    Person& operator=(Person&& other) noexcept;
+    void print();
+private:
+    char *name;
+    int age;
 };
 
-bool compare(const Student &a, const Student &b)
-{
-    return a.getScore() < b.getScore();
+// 普通构造函数
+Person::Person(char *Name, int Age) {
+    name = new char[strlen(Name) + 1];
+    strcpy(name, Name);
+    age = Age;
+    cout << "The constructor of Person is called!" << endl;
 }
 
-int main()
-{
+// 析构函数
+Person::~Person() {
+    delete[] name;
+    cout << "The destructor of Person is called!" << endl;
+}
 
-    Student students[] = {
-        Student("2023001", "张三", 85.5),
-        Student("2023002", "李四", 92.0),
-        Student("2023003", "王五", 78.0),
-        Student("2023004", "赵六", 95.5),
-        Student("2023005", "孙七", 88.0)};
+// 拷贝构造函数（深拷贝，避免浅拷贝问题）
+Person::Person(const Person& other) {
+    name = new char[strlen(other.name) + 1];
+    strcpy(name, other.name);
+    age = other.age;
+    cout << "Copy constructor of Person is called!" << endl;
+}
 
-    int n = sizeof(students) / sizeof(students[0]);
+// 移动构造函数（右值引用，转移资源）
+Person::Person(Person&& other) noexcept {
+    // 直接窃取other的资源，无需重新分配内存
+    name = other.name;
+    age = other.age;
+    // 将other的指针置空，避免other析构时释放已转移的内存
+    other.name = nullptr;
+    cout << "Move constructor of Person is called!" << endl;
+}
 
-    cout << "排序前的学生信息：" << endl;
-    for (int i = 0; i < n; i++)
-    {
-        students[i].showInfo();
+// 拷贝赋值运算符（深拷贝）
+Person& Person::operator=(const Person& other) {
+    if (this != &other) {
+        // 释放当前对象的旧内存
+        delete[] name;
+        // 分配新内存并复制内容
+        name = new char[strlen(other.name) + 1];
+        strcpy(name, other.name);
+        age = other.age;
     }
+    cout << "Copy assignment operator of Person is called!" << endl;
+    return *this;
+}
 
-    sort(students, students + n, compare);
-
-    cout << "排序后的学生信息：" << endl;
-
-    for (int i = 0; i < n; i++)
-    {
-        students[i].showInfo();
+// 移动赋值运算符（右值引用，转移资源）
+Person& Person::operator=(Person&& other) noexcept {
+    if (this != &other) {
+        // 释放当前对象的旧内存
+        delete[] name;
+        // 直接窃取other的资源
+        name = other.name;
+        age = other.age;
+        // 将other的指针置空
+        other.name = nullptr;
     }
+    cout << "Move assignment operator of Person is called!" << endl;
+    return *this;
+}
+
+void Person::print() {
+    cout << "Name: " << (name ? name : "nullptr") << ", Age: " << age << endl;
+}
+
+int main() {
+    Person p1("Alice", 20);
+    Person p2 = p1;          // 调用拷贝构造（左值场景，深拷贝）
+    Person p3 = move(p1);    // 调用移动构造（右值场景，转移资源，p1.name变为nullptr）
+    p2.print();
+    p3.print();
+    p1.print(); // 输出nullptr，p1已不再持有资源，析构时不会释放有效内存
     return 0;
 }
